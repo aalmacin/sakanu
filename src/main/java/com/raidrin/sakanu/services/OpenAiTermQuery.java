@@ -30,11 +30,11 @@ public class OpenAiTermQuery {
         if(sanitizedTerm.length() >= 255) {
             throw new IllegalArgumentException("Term cannot be longer than 255 characters");
         }
-        return getResponseFromOpenAI(systemContent, sanitizedTerm);
+        return getResponseFromOpenAI(domain, systemContent, sanitizedTerm);
     }
 
-    private TermResponse getResponseFromOpenAI(String systemContent, String term) {
-        return getMockResponse(term);
+    private TermResponse getResponseFromOpenAI(String domain, String systemContent, String term) {
+        return getMockResponse(domain, term);
 
 //        ChatMessage systemMessage = new ChatMessage();
 //        systemMessage.setRole("system");
@@ -72,9 +72,10 @@ public class OpenAiTermQuery {
     }
 
     @NotNull
-    private static TermResponse getMockResponse(String term) {
+    private static TermResponse getMockResponse(String domain, String term) {
         TermResponse termResponse = new TermResponse();
         termResponse.setSearchTerm(term);
+        termResponse.setDomain(domain);
         termResponse.setFlashcardFront("This is a test {{c1::flashcard}} front");
         termResponse.setDescription("This is a test description");
         termResponse.setPurpose("This is a test purpose");

@@ -9,6 +9,7 @@ import java.util.List;
 @Setter
 public class TermResponse {
     private String searchTerm;
+    private String domain;
     private String flashcardFront;
     private String description;
     private String purpose;

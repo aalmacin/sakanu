@@ -22,7 +22,7 @@ public class OpenAiController {
 
     @GetMapping("/test")
     public Mono<TermResponse> getOpenAIResponse(@RequestParam String term) {
-        return Mono.just(techTermsService.getTechTerm(term));
+        return Mono.just(techTermsService.getTechTerm("Spring Boot", term));
     }
 }
 

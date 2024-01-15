@@ -9,7 +9,7 @@ public class TechTermsService {
     private final OpenAiTermQuery openAiTermQuery;
 
 
-    public TermResponse getTechTerm(String term) {
-        return openAiTermQuery.query("tech or programming", term);
+    public TermResponse getTechTerm(String domain, String term) {
+        return openAiTermQuery.query(domain, term);
     }
 }
