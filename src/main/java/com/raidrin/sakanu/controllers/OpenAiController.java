@@ -1,8 +1,6 @@
 package com.raidrin.sakanu.controllers;
 
-import com.raidrin.sakanu.services.AnkiModelCreatorService;
-import com.raidrin.sakanu.services.TechTermsService;
-import com.raidrin.sakanu.services.TermResponse;
+import com.raidrin.sakanu.services.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,27 +9,29 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class OpenAiController {
     private final TechTermsService techTermsService;
-    private final AnkiModelCreatorService ankiModelCreatorService;
-
-    @GetMapping("/")
-    public Mono<String> home() {
-        return Mono.just("Hello World! This is a test.");
-    }
+    private final AnkiSakanuModelCreatorService ankiSakanuModelCreatorService;
+    private final AnkiTermNoteCreatorService ankiTermNoteCreatorService;
 
     @GetMapping("/test")
-    public Mono<TermResponse> getOpenAIResponse(@RequestParam String term) {
-        TermResponse termResponse = techTermsService.getTechTerm("Spring Boot", term);
+    public Mono<TermResponse> getOpenAIResponse(@RequestParam String domain, @RequestParam String term) {
+        TermResponse termResponse = techTermsService.getTechTerm(domain, term);
 
-        return Mono.just(termResponse);
+        try {
+            String response = ankiTermNoteCreatorService.addNote(domain, termResponse);
+            System.out.println("Added note to Anki: " + response);
+            return Mono.just(termResponse);
+        } catch (Exception e) {
+            return Mono.error(new RuntimeException("Failed to add note to Anki"));
+        }
     }
 
     @GetMapping("/anki-model")
     public Mono<String> createAnkiModel() {
-        ankiModelCreatorService.createAnkiModel();
+        ankiSakanuModelCreatorService.createAnkiModel();
 
         return Mono.just("Created anki model");
     }
