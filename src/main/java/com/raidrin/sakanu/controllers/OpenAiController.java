@@ -1,5 +1,6 @@
 package com.raidrin.sakanu.controllers;
 
+import com.raidrin.sakanu.services.AnkiModelCreatorService;
 import com.raidrin.sakanu.services.TechTermsService;
 import com.raidrin.sakanu.services.TermResponse;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class OpenAiController {
     private final TechTermsService techTermsService;
+    private final AnkiModelCreatorService ankiModelCreatorService;
 
     @GetMapping("/")
     public Mono<String> home() {
@@ -22,7 +24,16 @@ public class OpenAiController {
 
     @GetMapping("/test")
     public Mono<TermResponse> getOpenAIResponse(@RequestParam String term) {
-        return Mono.just(techTermsService.getTechTerm("Spring Boot", term));
+        TermResponse termResponse = techTermsService.getTechTerm("Spring Boot", term);
+
+        return Mono.just(termResponse);
+    }
+
+    @GetMapping("/anki-model")
+    public Mono<String> createAnkiModel() {
+        ankiModelCreatorService.createAnkiModel();
+
+        return Mono.just("Created anki model");
     }
 }
 
