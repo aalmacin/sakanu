@@ -16,7 +16,7 @@ public class OpenAiController {
     private final AnkiSakanuModelCreatorService ankiSakanuModelCreatorService;
     private final AnkiTermNoteCreatorService ankiTermNoteCreatorService;
 
-    @GetMapping("/test")
+    @GetMapping("/learn")
     public Mono<TermResponse> getOpenAIResponse(@RequestParam String domain, @RequestParam String term) {
         TermResponse termResponse = techTermsService.getTechTerm(domain, term);
 
@@ -27,13 +27,6 @@ public class OpenAiController {
         } catch (Exception e) {
             return Mono.error(new RuntimeException("Failed to add note to Anki"));
         }
-    }
-
-    @GetMapping("/anki-model")
-    public Mono<String> createAnkiModel() {
-        ankiSakanuModelCreatorService.createAnkiModel();
-
-        return Mono.just("Created anki model");
     }
 }
 

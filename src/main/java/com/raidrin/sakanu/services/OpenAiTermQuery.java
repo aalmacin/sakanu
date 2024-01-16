@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -76,7 +77,7 @@ public class OpenAiTermQuery {
         TermResponse termResponse = new TermResponse();
         termResponse.setSearchTerm(term);
         termResponse.setDomain(domain);
-        termResponse.setFlashcardFront("This is a test {{c1::flashcard}} front");
+        termResponse.setFlashcardFront("This is a test {{c1::flashcard}} front " + UUID.randomUUID());
         termResponse.setDescription("This is a test description");
         termResponse.setPurpose("This is a test purpose");
         termResponse.setSimpleExplanation("This is a test simple explanation");

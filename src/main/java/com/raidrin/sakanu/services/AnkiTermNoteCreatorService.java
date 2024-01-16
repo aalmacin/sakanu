@@ -16,8 +16,10 @@ import java.util.stream.Collectors;
 public class AnkiTermNoteCreatorService {
     private final ObjectMapper objectMapper;
     private final AnkiConnectService ankiConnectService;
+    private final AnkiSakanuModelCreatorService ankiSakanuModelCreatorService;
 
     public String addNote(String deckName, TermResponse termResponse) {
+        ankiSakanuModelCreatorService.createAnkiModel();
         ankiConnectService.createDeck(deckName);
 
         ObjectNode params = objectMapper.createObjectNode();
