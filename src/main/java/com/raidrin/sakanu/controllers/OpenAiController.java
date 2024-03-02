@@ -2,10 +2,7 @@ package com.raidrin.sakanu.controllers;
 
 import com.raidrin.sakanu.services.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -16,8 +13,9 @@ public class OpenAiController {
     private final AnkiSakanuModelCreatorService ankiSakanuModelCreatorService;
     private final AnkiTermNoteCreatorService ankiTermNoteCreatorService;
 
-    @GetMapping("/learn")
-    public Mono<TermResponse> getOpenAIResponse(@RequestParam String domain, @RequestParam String term) {
+    @GetMapping("/learn/{domain}/{term}")
+    public Mono<TermResponse> getOpenAIResponse(@PathVariable("domain") String domain, @PathVariable("term") String term) {
+        System.out.println("Received request for domain: " + domain + " and term: " + term);
         TermResponse termResponse = techTermsService.getTechTerm(domain, term);
 
         try {
