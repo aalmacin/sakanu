@@ -3,9 +3,6 @@ package com.raidrin.sakanu.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,10 +14,13 @@ public class AnkiTermNoteCreatorService {
     private final ObjectMapper objectMapper;
     private final AnkiConnectService ankiConnectService;
     private final AnkiSakanuModelCreatorService ankiSakanuModelCreatorService;
+    private final DomainService domainService;
 
     public String addNote(String deckName, TermResponse termResponse) {
         ankiSakanuModelCreatorService.createAnkiModel();
-        ankiConnectService.createDeck(deckName);
+        if (!domainService.getDomains().contains(deckName)) {
+            domainService.createDomain(deckName);
+        }
 
         ObjectNode params = objectMapper.createObjectNode();
         ObjectNode note = objectMapper.createObjectNode();

@@ -14,6 +14,7 @@ public class OpenAiController {
     private final TechTermsService techTermsService;
     private final AnkiSakanuModelCreatorService ankiSakanuModelCreatorService;
     private final AnkiTermNoteCreatorService ankiTermNoteCreatorService;
+    private final DomainService domainService;
 
     @GetMapping("/learn/{domain}/{term}")
     public Mono<TermResponse> getOpenAIResponse(@PathVariable("domain") String domain, @PathVariable("term") String term) {
@@ -31,7 +32,7 @@ public class OpenAiController {
 
     @GetMapping("domains")
     public Mono<List<String>> getDomains() {
-        return Mono.just(List.of("Biology", "Chemistry", "Spring Boot"));
+        return Mono.just(domainService.getDomains());
     }
 }
 

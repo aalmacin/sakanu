@@ -3,11 +3,12 @@ package com.raidrin.sakanu.services;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Getter
 @Setter
-public class TermResponse {
+public class TermResponse implements Serializable {
     private String searchTerm;
     private String domain;
     private String flashcardFront;
