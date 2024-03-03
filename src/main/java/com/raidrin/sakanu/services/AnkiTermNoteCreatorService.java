@@ -28,7 +28,7 @@ public class AnkiTermNoteCreatorService {
         note.put("modelName", "Sakanu");
 
         note.put("fields", objectMapper.createObjectNode()
-                .put("Text", termResponse.getFlashcardFront())
+                .put("Text", termResponse.getCloze())
                 .put("Extra", termResponse.getDescription())
                 .put("simpleExplanation", termResponse.getSimpleExplanation())
                 .put("purpose", termResponse.getPurpose())

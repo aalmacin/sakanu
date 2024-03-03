@@ -11,7 +11,7 @@ import java.util.List;
 public class TermResponse implements Serializable {
     private String searchTerm;
     private String domain;
-    private String flashcardFront;
+    private String cloze;
     private String description;
     private String purpose;
     private String simpleExplanation;

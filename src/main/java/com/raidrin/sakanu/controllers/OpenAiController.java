@@ -12,7 +12,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OpenAiController {
     private final TechTermsService techTermsService;
-    private final AnkiSakanuModelCreatorService ankiSakanuModelCreatorService;
     private final AnkiTermNoteCreatorService ankiTermNoteCreatorService;
     private final DomainService domainService;
 
