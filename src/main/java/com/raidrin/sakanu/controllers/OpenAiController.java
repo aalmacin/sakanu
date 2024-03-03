@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
@@ -25,6 +27,11 @@ public class OpenAiController {
         } catch (Exception e) {
             return Mono.error(new RuntimeException("Failed to add note to Anki"));
         }
+    }
+
+    @GetMapping("domains")
+    public Mono<List<String>> getDomains() {
+        return Mono.just(List.of("Biology", "Chemistry", "Spring Boot"));
     }
 }
 
