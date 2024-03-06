@@ -8,17 +8,10 @@ import com.theokanning.openai.completion.chat.ChatCompletionResult;
 import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.service.OpenAiService;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -34,10 +27,10 @@ public class OpenAiTermQuery {
         if(sanitizedTerm.length() >= 255) {
             throw new IllegalArgumentException("Term cannot be longer than 255 characters");
         }
-        return getResponseFromOpenAI(domain, systemContent, sanitizedTerm);
+        return getResponseFromOpenAI(systemContent, sanitizedTerm);
     }
 
-    private TermResponse getResponseFromOpenAI(String domain, String systemContent, String term) {
+    private TermResponse getResponseFromOpenAI(String systemContent, String term) {
         ChatMessage systemMessage = new ChatMessage();
         systemMessage.setRole("system");
         systemMessage.setContent(systemContent);
@@ -64,6 +57,7 @@ public class OpenAiTermQuery {
         }
         ChatCompletionChoice chatCompletionChoice = chatCompletionChoices.get(0);
         String gptResponse = chatCompletionChoice.getMessage().getContent();
+
         // Testing purposes
 //        try {
 //            Files.writeString(
