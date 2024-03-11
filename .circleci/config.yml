@@ -1,6 +1,6 @@
-# This config was automatically generated from your source code
-# Stacks detected: deps:java:.,tool:gradle:
 version: 2.1
+orbs:
+  aws-elastic-beanstalk: circleci/aws-elastic-beanstalk@1.0.0
 jobs:
   test-java:
     docker:
@@ -25,18 +25,27 @@ jobs:
       - store_artifacts:
           path: build/reports
   deploy:
-    # This is an example deploy job, not actually used by the workflow
     docker:
       - image: cimg/base:stable
     steps:
-      # Replace this with steps to deploy to users
+      - aws-elastic-beanstalk/setup:
+          aws-access-key-id: $AWS_ACCESS_KEY_ID
+          aws-secret-access-key: $AWS_SECRET_ACCESS_KEY
+          aws-region: ca-central-1
+      - checkout
       - run:
-          name: deploy
-          command: '#e.g. ./deploy.sh'
+          name: Build JAR
+          command: ./gradlew bootJar
+      - aws-elastic-beanstalk/deploy:
+          app-name: sakanu
+          env-name: sakanu-prod
+          version-label: v$(date +%s)
+          region: us-east-1
+          jar-path: build/libs/sakanu.jar
 workflows:
   build-and-test:
     jobs:
       - test-java
-    # - deploy:
-    #     requires:
-    #       - test-java
+      - deploy:
+          requires:
+            - test-java

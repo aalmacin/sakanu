@@ -1,0 +1,23 @@
+Resources:
+  SakanuUser:
+    Type: 'AWS::IAM::User'
+    Properties:
+      UserName: SakanuUser
+
+  SakanuElasticBeanstalkPolicy:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: SakanuElasticBeanstalkPolicy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: 'elasticbeanstalk:*'
+            Resource: '*'
+      Users:
+        - !Ref SakanuUser
+
+  SakanuElasticBeanstalkAccessKey:
+    Type: 'AWS::IAM::AccessKey'
+    Properties:
+      UserName: !Ref SakanuUser
