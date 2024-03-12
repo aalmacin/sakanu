@@ -1,0 +1,23 @@
+# aws cloudformation create-stack --stack-name SakanuSecurityGroup --template-body file://./cloudformation/security-group.yml --parameters ParameterKey=CidrIp,ParameterValue=your-cidr-ip
+AWSTemplateFormatVersion: '2010-09-09'
+Description: AWS CloudFormation Template for setting up a security group
+Parameters:
+  CidrIp:
+    Description: The IP range in CIDR notation
+    Type: String
+    Default: 0.0.0.0/0
+
+Resources:
+  SakanuSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Security group for Sakanu
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIp: !Ref CidrIp  # Allows HTTP access from the specified IP range on port 8080
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: !Ref CidrIp  # Allows SSH access from the specified IP range

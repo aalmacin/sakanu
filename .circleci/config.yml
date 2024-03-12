@@ -40,8 +40,10 @@ jobs:
           app-name: sakanu
           env-name: sakanu-prod
           version-label: v$(date +%s)
-          region: us-east-1
+          region: ca-central-1
           jar-path: build/libs/sakanu.jar
+          instance-type: t2.micro
+          security-group: $AWS_SECURITY_GROUP_ID
 workflows:
   build-and-test:
     jobs:

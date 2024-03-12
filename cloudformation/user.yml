@@ -1,3 +1,4 @@
+# aws cloudformation create-stack --stack-name SakanuUser --template-body file://./cloudformation/user.yml --capabilities CAPABILITY_NAMED_IAM
 Resources:
   SakanuUser:
     Type: 'AWS::IAM::User'
