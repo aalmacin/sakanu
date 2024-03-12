@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  aws-elastic-beanstalk: circleci/aws-elastic-beanstalk@2.0.1
+  eb: circleci/aws-elastic-beanstalk@2.0.1
 jobs:
   test-java:
     docker:
@@ -28,12 +28,12 @@ jobs:
     docker:
       - image: cimg/base:stable
     steps:
-      - aws-elastic-beanstalk/setup
+      - eb/setup
       - checkout
       - run:
           name: Build JAR
           command: ./gradlew bootJar
-      - aws-elastic-beanstalk/deploy:
+      - eb/deploy:
           app-name: sakanu
           env-name: sakanu-prod
           version-label: v$(date +%s)
