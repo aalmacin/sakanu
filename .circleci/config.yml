@@ -33,7 +33,7 @@ jobs:
       - run:
           name: Build JAR
           command: ./gradlew bootJar
-      - eb/deploy:
+      - eb/deploy-app:
           app-name: sakanu
           env-name: sakanu-prod
           version-label: v$(date +%s)
