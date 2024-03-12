@@ -28,10 +28,7 @@ jobs:
     docker:
       - image: cimg/base:stable
     steps:
-      - aws-elastic-beanstalk/setup:
-          aws-access-key-id: $AWS_ACCESS_KEY_ID
-          aws-secret-access-key: $AWS_SECRET_ACCESS_KEY
-          aws-region: ca-central-1
+      - aws-elastic-beanstalk/setup
       - checkout
       - run:
           name: Build JAR
