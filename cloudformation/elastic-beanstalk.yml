@@ -21,7 +21,17 @@ Resources:
         Version: '2012-10-17'
         Statement:
           - Effect: Allow
-            Action: 'elasticbeanstalk:*'
+            Action:
+              - 'elasticbeanstalk:*'
+              - 's3:*'
+              - 'ec2:*'
+              - 'autoscaling:*'
+              - 'cloudformation:*'
+              - 'sns:*'
+              - 'cloudwatch:*'
+              - 'logs:*'
+              - 'sqs:*'
+              - 'iam:PassRole'
             Resource: '*'
       Users:
         - !Ref SakanuUser
