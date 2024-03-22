@@ -6,6 +6,7 @@ jobs:
     docker:
       - image: cimg/openjdk:17.0
     steps:
+      - aws-cli/setup
       - checkout
       - run:
           name: Calculate cache key
