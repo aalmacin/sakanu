@@ -40,7 +40,7 @@ jobs:
       - run:
             name: Create application version
             command: |
-              aws elasticbeanstalk create-application-version --application-name sakanu --version-label v$(date +%s) --source-bundle S3Bucket="your-s3-bucket",S3Key="sakanu.jar"
+              aws elasticbeanstalk create-application-version --application-name sakanu --version-label v$(date +%s) --source-bundle S3Bucket="sakanu-deploy",S3Key="sakanu.jar"
       - run:
           name: Deploy to Elastic Beanstalk
           command: |
