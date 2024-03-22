@@ -26,6 +26,19 @@ Resources:
       Users:
         - !Ref SakanuUser
 
+  SakanuS3Policy:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: SakanuS3Policy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: 's3:GetObject'
+            Resource: 'arn:aws:s3:::sakanu-deploy/*'
+      Users:
+        - !Ref SakanuUser
+
   SakanuElasticBeanstalkAccessKey:
     Type: 'AWS::IAM::AccessKey'
     Properties:
