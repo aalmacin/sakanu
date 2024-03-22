@@ -44,7 +44,9 @@ jobs:
       - run:
           name: Deploy to Elastic Beanstalk
           command: |
-            aws elasticbeanstalk update-environment --application-name sakanu --environment-name sakanu-prod --version-label v$(date +%s)
+            aws elasticbeanstalk update-environment --application-name sakanu \
+            --option-settings Namespace=aws:elasticbeanstalk:application:environment,OptionName=APP_UI_URL,Value=$APP_UI_URL \
+            --environment-name sakanu-prod --version-label v$(date +%s)
 workflows:
   build-and-test:
     jobs:
