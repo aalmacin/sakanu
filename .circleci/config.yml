@@ -48,6 +48,6 @@ workflows:
   build-and-test:
     jobs:
       - test-java
-      - eb/deploy:
+      - deploy:
           requires:
             - test-java
