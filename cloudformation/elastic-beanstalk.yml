@@ -49,6 +49,25 @@ Resources:
         - 'arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkService'
         - 'arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkEnhancedHealth'
 
+  SakanuDeployBucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: sakanu-deploy
+
+  SakanuDeployBucketPolicy:
+    Type: 'AWS::S3::BucketPolicy'
+    Properties:
+      Bucket: !Ref SakanuDeployBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowSakanuUser
+            Effect: Allow
+            Principal:
+              AWS: !GetAtt SakanuUser.Arn
+            Action: 's3:PutObject'
+            Resource: !Sub 'arn:aws:s3:::${SakanuDeployBucket}/*'
+
   SakanuInstanceProfile:
     Type: 'AWS::IAM::InstanceProfile'
     Properties:

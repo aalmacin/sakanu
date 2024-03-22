@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  eb: circleci/aws-elastic-beanstalk@2.0.1
+  aws-cli: circleci/aws-cli@1.3.1
 jobs:
   test-java:
     docker:
@@ -24,20 +24,26 @@ jobs:
             - ~/.gradle/caches
       - store_artifacts:
           path: build/reports
-  deploy:
-    docker:
-      - image: cimg/base:stable
-    steps:
-      - eb/setup
-      - checkout
       - run:
           name: Build JAR
           command: ./gradlew bootJar
       - run:
+          name: Upload JAR to S3
+          command: aws s3 cp build/libs/sakanu.jar s3://sakanu-deploy/sakanu.jar
+  deploy:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - aws-cli/setup
+      - checkout
+      - run:
+            name: Create application version
+            command: |
+              aws elasticbeanstalk create-application-version --application-name sakanu --version-label v$(date +%s) --source-bundle S3Bucket="your-s3-bucket",S3Key="sakanu.jar"
+      - run:
           name: Deploy to Elastic Beanstalk
           command: |
-            eb create sakanu-prod --elb-type application --region ca-central-1 --profile default
-            eb deploy sakanu-prod --label v$(date +%s) --region ca-central-1 --profile default
+            aws elasticbeanstalk update-environment --application-name sakanu --environment-name sakanu-prod --version-label v$(date +%s)
 workflows:
   build-and-test:
     jobs:
