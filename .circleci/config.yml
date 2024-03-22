@@ -40,11 +40,11 @@ jobs:
       - run:
             name: Create application version
             command: |
-              aws elasticbeanstalk create-application-version --application-name sakanu-prod --version-label v$(date +%s) --source-bundle S3Bucket="sakanu-deploy",S3Key="sakanu.jar"
+              aws elasticbeanstalk create-application-version --application-name sakanu-app --version-label v$(date +%s) --source-bundle S3Bucket="sakanu-deploy",S3Key="sakanu.jar"
       - run:
           name: Deploy to Elastic Beanstalk
           command: |
-            aws elasticbeanstalk update-environment --application-name sakanu-prod \
+            aws elasticbeanstalk update-environment --application-name sakanu-app \
             --option-settings Namespace=aws:elasticbeanstalk:application:environment,OptionName=APP_UI_URL,Value=$APP_UI_URL \
             --environment-name sakanu-prod --version-label v$(date +%s)
 workflows:
