@@ -27,10 +27,10 @@ public class OpenAiTermQuery {
         if(sanitizedTerm.length() >= 255) {
             throw new IllegalArgumentException("Term cannot be longer than 255 characters");
         }
-        return getResponseFromOpenAI(systemContent, sanitizedTerm);
+        return getResponseFromOpenAI(systemContent, domain, sanitizedTerm);
     }
 
-    private TermResponse getResponseFromOpenAI(String systemContent, String term) {
+    private TermResponse getResponseFromOpenAI(String systemContent, String domain, String term) {
         ChatMessage systemMessage = new ChatMessage();
         systemMessage.setRole("system");
         systemMessage.setContent(systemContent);
@@ -69,7 +69,9 @@ public class OpenAiTermQuery {
 //        }
 
         try {
-            return getTermResponse(gptResponse);
+            TermResponse termResponse = getTermResponse(gptResponse);
+            termResponse.setDomain(domain);
+            return termResponse;
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Failed to process gpt response", e);
         }

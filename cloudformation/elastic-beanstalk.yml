@@ -1,0 +1,98 @@
+# aws cloudformation create-stack --stack-name SakanuApp --template-body file://./cloudformation/elastic-beanstalk.yml --parameters ParameterKey=CidrIp,ParameterValue=your-cidr-ip
+AWSTemplateFormatVersion: '2010-09-09'
+Description: AWS CloudFormation Template for setting up a security group
+Parameters:
+  CidrIp:
+    Description: The IP range in CIDR notation
+    Type: String
+    Default: 0.0.0.0/0
+
+Resources:
+  SakanuUser:
+    Type: 'AWS::IAM::User'
+    Properties:
+      UserName: SakanuUser
+
+  SakanuElasticBeanstalkPolicy:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: SakanuElasticBeanstalkPolicy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: 'elasticbeanstalk:*'
+            Resource: '*'
+      Users:
+        - !Ref SakanuUser
+
+  SakanuElasticBeanstalkAccessKey:
+    Type: 'AWS::IAM::AccessKey'
+    Properties:
+      UserName: !Ref SakanuUser
+
+  SakanuInstanceRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: 'sts:AssumeRole'
+      Path: '/'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier'
+        - 'arn:aws:iam::aws:policy/AWSElasticBeanstalkWorkerTier'
+        - 'arn:aws:iam::aws:policy/AWSElasticBeanstalkMulticontainerDocker'
+        - 'arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkService'
+        - 'arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkEnhancedHealth'
+
+  SakanuInstanceProfile:
+    Type: 'AWS::IAM::InstanceProfile'
+    Properties:
+      Path: '/'
+      Roles:
+        - !Ref SakanuInstanceRole
+
+  SakanuSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Security group for Sakanu
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIp: !Ref CidrIp  # Allows HTTP access from the specified IP range on port 8080
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: !Ref CidrIp  # Allows SSH access from the specified IP range
+      Tags:
+          - Key: Project
+            Value: Sakanu
+  SakanuApp:
+    Type: 'AWS::ElasticBeanstalk::Application'
+    Properties:
+      ApplicationName: sakanu-app
+
+  SakanuEnvironment:
+    Type: 'AWS::ElasticBeanstalk::Environment'
+    Properties:
+      ApplicationName: !Ref SakanuApp
+      EnvironmentName: sakanu-prod
+      SolutionStackName: 64bit Amazon Linux 2023 v4.2.1 running Corretto 21
+      OptionSettings:
+        - Namespace: 'aws:autoscaling:launchconfiguration'
+          OptionName: 'InstanceType'
+          Value: 't2.micro'
+        - Namespace: 'aws:autoscaling:launchconfiguration'
+          OptionName: 'SecurityGroups'
+          Value: !Ref SakanuSecurityGroup
+        - Namespace: 'aws:autoscaling:launchconfiguration'
+          OptionName: 'IamInstanceProfile'
+          Value: !Ref SakanuInstanceProfile
+      Tags:
+        - Key: Project
+          Value: Sakanu

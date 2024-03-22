@@ -33,18 +33,15 @@ jobs:
       - run:
           name: Build JAR
           command: ./gradlew bootJar
-      - eb/deploy-app:
-          app-name: sakanu
-          env-name: sakanu-prod
-          version-label: v$(date +%s)
-          region: ca-central-1
-          jar-path: build/libs/sakanu.jar
-          instance-type: t2.micro
-          security-group: $AWS_SECURITY_GROUP_ID
+      - run:
+          name: Deploy to Elastic Beanstalk
+          command: |
+            eb create sakanu-prod --elb-type application --region ca-central-1 --profile default
+            eb deploy sakanu-prod --label v$(date +%s) --region ca-central-1 --profile default
 workflows:
   build-and-test:
     jobs:
       - test-java
-      - deploy:
+      - eb/deploy:
           requires:
             - test-java
