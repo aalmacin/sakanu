@@ -49,6 +49,22 @@ jobs:
             aws elasticbeanstalk update-environment --application-name sakanu-app \
             --option-settings Namespace=aws:elasticbeanstalk:application:environment,OptionName=APP_UI_URL,Value=$APP_UI_URL \
             --environment-name sakanu-prod --version-label v${CIRCLE_SHA1}
+      - run:
+          name: Wait for environment update to complete
+          command: |
+            while true; do
+              status=$(aws elasticbeanstalk describe-environments --application-name sakanu-app --environment-names sakanu-prod --query "Environments[0].Status" --output text)
+              if [[ $status == "Ready" ]]; then
+                echo "Environment update completed successfully."
+                break
+              elif [[ $status == "UpdateFailed" ]]; then
+                echo "Environment update failed."
+                exit 1
+              else
+                echo "Environment update is still in progress. Current status: $status"
+                sleep 30
+              fi
+            done
 workflows:
   build-and-test:
     jobs:

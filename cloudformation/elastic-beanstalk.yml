@@ -26,6 +26,7 @@ Resources:
               - 's3:*'
               - 'ec2:*'
               - 'autoscaling:*'
+              - 'elasticloadbalancing:*'
               - 'cloudformation:*'
               - 'sns:*'
               - 'cloudwatch:*'
