@@ -136,6 +136,21 @@ Resources:
         - Namespace: 'aws:autoscaling:launchconfiguration'
           OptionName: 'IamInstanceProfile'
           Value: !Ref SakanuInstanceProfile
+        - Namespace: 'aws:elasticbeanstalk:application:environment'
+          OptionName: 'PORT'
+          Value: '80'
+        - Namespace: 'aws:elasticbeanstalk:application:environment'
+          OptionName: 'JAVA_OPTS'
+          Value: '-Xmx256m'
+        - Namespace: 'aws:elbv2:listener:80'
+          OptionName: 'Protocol'
+          Value: 'HTTP'
+        - Namespace: 'aws:elbv2:listener:80'
+          OptionName: 'DefaultProcess'
+          Value: 'http'
+        - Namespace: 'aws:elasticbeanstalk:environment:process:http'
+          OptionName: 'Port'
+          Value: '8080'
       Tags:
         - Key: Project
           Value: Sakanu
