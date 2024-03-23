@@ -136,6 +136,9 @@ Resources:
         - Namespace: 'aws:autoscaling:launchconfiguration'
           OptionName: 'IamInstanceProfile'
           Value: !Ref SakanuInstanceProfile
+        - Namespace: 'aws:autoscaling:launchconfiguration'
+          OptionName: 'EC2KeyName'
+          Value: 'sakanu-local'
         - Namespace: 'aws:elasticbeanstalk:environment:process:default'
           OptionName: 'HealthCheckPath'
           Value: '/actuator/health'
