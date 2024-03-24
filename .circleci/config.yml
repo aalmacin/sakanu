@@ -41,21 +41,21 @@ jobs:
             name: Create application version
             command: |
               aws elasticbeanstalk create-application-version \
-              --application-name sakanu-app --version-label v${CIRCLE_SHA1} \
+              --application-name sakanu-api --version-label v${CIRCLE_SHA1} \
               --source-bundle S3Bucket="sakanu-deploy",S3Key="sakanu.jar"
       - run:
           name: Deploy to Elastic Beanstalk
           command: |
-            aws elasticbeanstalk update-environment --application-name sakanu-app \
+            aws elasticbeanstalk update-environment --application-name sakanu-api \
             --option-settings Namespace=aws:elasticbeanstalk:application:environment,OptionName=APP_UI_URL,Value=$APP_UI_URL \
             --option-settings Namespace=aws:elasticbeanstalk:application:environment,OptionName=OPENAI_API_KEY,Value=$OPENAI_API_KEY \
-            --environment-name sakanu-prod --version-label v${CIRCLE_SHA1}
+            --environment-name sakanu --version-label v${CIRCLE_SHA1}
       - run:
           name: Wait for environment update to complete
           command: |
             counter=0
             while true; do
-              status=$(aws elasticbeanstalk describe-environments --application-name sakanu-app --environment-names sakanu-prod --query "Environments[0].Status" --output text)
+              status=$(aws elasticbeanstalk describe-environments --application-name sakanu-api --environment-names sakanu --query "Environments[0].Status" --output text)
               if [[ $status == "Ready" ]]; then
                 echo "Environment update completed successfully."
                 break

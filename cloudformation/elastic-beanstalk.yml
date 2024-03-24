@@ -8,10 +8,33 @@ Parameters:
     Default: 0.0.0.0/0
 
 Resources:
+  SakanuVPC:
+    Type: 'AWS::EC2::VPC'
+    Properties:
+      CidrBlock: '10.0.0.0/16'
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Project
+          Value: Sakanu
+
+  SakanuSubnet:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      VpcId: !Ref SakanuVPC
+      CidrBlock: '10.0.1.0/24'
+      AvailabilityZone: 'ca-central-1b'
+      Tags:
+        - Key: Project
+          Value: Sakanu
+
   SakanuUser:
     Type: 'AWS::IAM::User'
     Properties:
       UserName: SakanuUser
+      Tags:
+        - Key: Project
+          Value: Sakanu
 
   SakanuElasticBeanstalkPolicy:
     Type: 'AWS::IAM::Policy'
@@ -72,11 +95,17 @@ Resources:
         - 'arn:aws:iam::aws:policy/AWSElasticBeanstalkMulticontainerDocker'
         - 'arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkService'
         - 'arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkEnhancedHealth'
+      Tags:
+        - Key: Project
+          Value: Sakanu
 
   SakanuDeployBucket:
     Type: 'AWS::S3::Bucket'
     Properties:
       BucketName: sakanu-deploy
+      Tags:
+        - Key: Project
+          Value: Sakanu
 
   SakanuDeployBucketPolicy:
     Type: 'AWS::S3::BucketPolicy'
@@ -103,11 +132,12 @@ Resources:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
       GroupDescription: Security group for Sakanu
+      VpcId: !Ref SakanuVPC
       SecurityGroupIngress:
         - IpProtocol: tcp
-          FromPort: 8080
-          ToPort: 8080
-          CidrIp: !Ref CidrIp  # Allows HTTP access from the specified IP range on port 8080
+          FromPort: 80
+          ToPort: 80
+          CidrIp: !Ref CidrIp  # Allows HTTP access from the specified IP range on port 80
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
@@ -115,21 +145,28 @@ Resources:
       Tags:
           - Key: Project
             Value: Sakanu
+
   SakanuApp:
     Type: 'AWS::ElasticBeanstalk::Application'
     Properties:
-      ApplicationName: sakanu-app
+      ApplicationName: sakanu-api
 
   SakanuEnvironment:
     Type: 'AWS::ElasticBeanstalk::Environment'
     Properties:
       ApplicationName: !Ref SakanuApp
-      EnvironmentName: sakanu-prod
+      EnvironmentName: sakanu
       SolutionStackName: 64bit Amazon Linux 2023 v4.2.1 running Corretto 21
       OptionSettings:
         - Namespace: 'aws:autoscaling:launchconfiguration'
           OptionName: 'InstanceType'
           Value: 't2.micro'
+        - Namespace: 'aws:ec2:vpc'
+          OptionName: 'VPCId'
+          Value: !Ref SakanuVPC
+        - Namespace: 'aws:ec2:vpc'
+          OptionName: 'Subnets'
+          Value: !Ref SakanuSubnet
         - Namespace: 'aws:autoscaling:launchconfiguration'
           OptionName: 'SecurityGroups'
           Value: !Ref SakanuSecurityGroup
