@@ -6,6 +6,9 @@ Parameters:
     Description: The IP range in CIDR notation
     Type: String
     Default: 0.0.0.0/0
+  ApiDomain:
+    Description: The domain name for the API
+    Type: String
 
 Resources:
   SakanuVPC:
@@ -162,11 +165,11 @@ Resources:
         - IpProtocol: tcp
           FromPort: 80
           ToPort: 80
-          CidrIp: 0.0.0.0/0
+          CidrIp: !Ref CidrIp
         - IpProtocol: tcp
           FromPort: 443
           ToPort: 443
-          CidrIp: 0.0.0.0/0
+          CidrIp: !Ref CidrIp
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
@@ -177,6 +180,12 @@ Resources:
       Tags:
           - Key: Project
             Value: Sakanu
+
+  SakanuCertificate:
+    Type: 'AWS::CertificateManager::Certificate'
+    Properties:
+      DomainName: !Ref ApiDomain
+      ValidationMethod: 'DNS'
 
   SakanuApp:
     Type: 'AWS::ElasticBeanstalk::Application'
@@ -214,6 +223,21 @@ Resources:
         - Namespace: 'aws:elasticbeanstalk:environment:process:default'
           OptionName: 'HealthCheckPath'
           Value: '/actuator/health'
+        - Namespace: 'aws:elbv2:loadbalancer'
+          OptionName: 'ManagedSecurityGroup'
+          Value: !Ref SakanuSecurityGroup
+        - Namespace: 'aws:elbv2:loadbalancer'
+          OptionName: 'SecurityGroups'
+          Value: !Ref SakanuSecurityGroup
+        - Namespace: 'aws:elbv2:listener:default'
+          OptionName: 'Protocol'
+          Value: 'HTTPS'
+        - Namespace: 'aws:elbv2:listener:443'
+          OptionName: 'ListenerEnabled'
+          Value: 'true'
+        - Namespace: 'aws:elbv2:listener:443'
+          OptionName: 'SSLCertificateArns'
+          Value: !Ref SakanuCertificate
       Tags:
         - Key: Project
           Value: Sakanu
