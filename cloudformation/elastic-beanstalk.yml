@@ -165,11 +165,11 @@ Resources:
         - IpProtocol: tcp
           FromPort: 80
           ToPort: 80
-          CidrIp: !Ref CidrIp
+          CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
           FromPort: 443
           ToPort: 443
-          CidrIp: !Ref CidrIp
+          CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
           FromPort: 22
           ToPort: 22
@@ -199,6 +199,27 @@ Resources:
       EnvironmentName: sakanu-api-prod
       SolutionStackName: 64bit Amazon Linux 2023 v4.2.1 running Corretto 21
       OptionSettings:
+        - Namespace: 'aws:elasticbeanstalk:environment'
+          OptionName: 'EnvironmentType'
+          Value: 'LoadBalanced'
+        - Namespace: 'aws:elb:listener:80'
+          OptionName: 'ListenerEnabled'
+          Value: 'true'
+        - Namespace: 'aws:elb:listener:443'
+          OptionName: 'ListenerEnabled'
+          Value: 'true'
+        - Namespace: 'aws:elb:listener:443'
+          OptionName: 'ListenerProtocol'
+          Value: 'HTTPS'
+        - Namespace: 'aws:elb:listener:443'
+          OptionName: 'InstancePort'
+          Value: '80'
+        - Namespace: 'aws:elb:listener:443'
+          OptionName: 'InstanceProtocol'
+          Value: 'HTTP'
+        - Namespace: 'aws:elb:listener:443'
+          OptionName: 'SSLCertificateId'
+          Value: !Ref SakanuCertificate
         - Namespace: 'aws:autoscaling:launchconfiguration'
           OptionName: 'InstanceType'
           Value: 't2.micro'
@@ -223,21 +244,6 @@ Resources:
         - Namespace: 'aws:elasticbeanstalk:environment:process:default'
           OptionName: 'HealthCheckPath'
           Value: '/actuator/health'
-        - Namespace: 'aws:elbv2:loadbalancer'
-          OptionName: 'ManagedSecurityGroup'
-          Value: !Ref SakanuSecurityGroup
-        - Namespace: 'aws:elbv2:loadbalancer'
-          OptionName: 'SecurityGroups'
-          Value: !Ref SakanuSecurityGroup
-        - Namespace: 'aws:elbv2:listener:default'
-          OptionName: 'Protocol'
-          Value: 'HTTPS'
-        - Namespace: 'aws:elbv2:listener:443'
-          OptionName: 'ListenerEnabled'
-          Value: 'true'
-        - Namespace: 'aws:elbv2:listener:443'
-          OptionName: 'SSLCertificateArns'
-          Value: !Ref SakanuCertificate
       Tags:
         - Key: Project
           Value: Sakanu
