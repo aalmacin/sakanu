@@ -9,6 +9,10 @@ Parameters:
   ApiDomain:
     Description: The domain name for the API
     Type: String
+  SakanuDatabasePassword:
+    Description: The password for the database
+    Type: String
+    NoEcho: true
 
 Resources:
   SakanuVPC:
@@ -45,12 +49,23 @@ Resources:
       DestinationCidrBlock: '0.0.0.0/0'
       GatewayId: !Ref SakanuInternetGateway
 
-  SakanuSubnet:
+  SakanuSubnet1:
     Type: 'AWS::EC2::Subnet'
     Properties:
       VpcId: !Ref SakanuVPC
-      CidrBlock: '10.0.1.0/24'
+      CidrBlock: '10.0.3.0/24'
       AvailabilityZone: 'ca-central-1b'
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Project
+          Value: Sakanu
+
+  SakanuSubnet2:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      VpcId: !Ref SakanuVPC
+      CidrBlock: '10.0.2.0/24'
+      AvailabilityZone: 'ca-central-1a'
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Project
@@ -178,8 +193,8 @@ Resources:
         - IpProtocol: -1
           CidrIp: 0.0.0.0/0
       Tags:
-          - Key: Project
-            Value: Sakanu
+        - Key: Project
+          Value: Sakanu
 
   SakanuCertificate:
     Type: 'AWS::CertificateManager::Certificate'
@@ -228,7 +243,7 @@ Resources:
           Value: !Ref SakanuVPC
         - Namespace: 'aws:ec2:vpc'
           OptionName: 'Subnets'
-          Value: !Ref SakanuSubnet
+          Value: !Ref SakanuSubnet1
         - Namespace: 'aws:ec2:vpc'
           OptionName: 'AssociatePublicIpAddress'
           Value: 'true'
@@ -244,6 +259,49 @@ Resources:
         - Namespace: 'aws:elasticbeanstalk:environment:process:default'
           OptionName: 'HealthCheckPath'
           Value: '/actuator/health'
+      Tags:
+        - Key: Project
+          Value: Sakanu
+
+  SakanuDatabaseSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Security group for Sakanu Database
+      VpcId: !Ref SakanuVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3306
+          ToPort: 3306
+          SourceSecurityGroupId: !GetAtt SakanuSecurityGroup.GroupId
+      Tags:
+        - Key: Project
+          Value: Sakanu
+
+  SakanuDBSubnetGroup:
+    Type: 'AWS::RDS::DBSubnetGroup'
+    Properties:
+      DBSubnetGroupDescription: Subnet group for Sakanu Database
+      SubnetIds:
+        - !Ref SakanuSubnet1
+        - !Ref SakanuSubnet2
+      Tags:
+        - Key: Project
+          Value: Sakanu
+
+  SakanuDatabase:
+    Type: 'AWS::RDS::DBInstance'
+    Properties:
+      DBName: sakanu
+      Engine: mysql
+      EngineVersion: 8.0.35
+      DBInstanceClass: db.t3.micro
+      AllocatedStorage: 10
+      MasterUsername: sakanu
+      MasterUserPassword: !Ref SakanuDatabasePassword
+      PubliclyAccessible: false
+      VPCSecurityGroups:
+        - !GetAtt SakanuDatabaseSecurityGroup.GroupId
+      DBSubnetGroupName: !Ref SakanuDBSubnetGroup
       Tags:
         - Key: Project
           Value: Sakanu
