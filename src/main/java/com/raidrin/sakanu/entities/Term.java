@@ -1,5 +1,7 @@
 package com.raidrin.sakanu.entities;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.raidrin.sakanu.services.TermResponse;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -36,7 +38,8 @@ public class Term {
     @Column(columnDefinition = "TEXT")
     private String categories;
 
-    public static Term fromTermResponse(TermResponse termResponse) {
+    public static Term fromTermResponse(TermResponse termResponse) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
         Term term = new Term();
         term.setTerm(termResponse.getSearchTerm());
         term.setDomain(termResponse.getDomain());
@@ -44,10 +47,9 @@ public class Term {
         term.setDescription(termResponse.getDescription());
         term.setPurpose(termResponse.getPurpose());
         term.setSimpleExplanation(termResponse.getSimpleExplanation());
-        // TODO: JSON string
-        term.setQuestions(termResponse.getQuestions().toString());
-        term.setRelatedTerms(termResponse.getRelatedTerms().toString());
-        term.setCategories(termResponse.getCategories().toString());
+        term.setQuestions(objectMapper.writeValueAsString(termResponse.getQuestions()));
+        term.setCategories(objectMapper.writeValueAsString(termResponse.getCategories()));
+        term.setRelatedTerms(objectMapper.writeValueAsString(termResponse.getRelatedTerms()));
         return term;
     }
 }

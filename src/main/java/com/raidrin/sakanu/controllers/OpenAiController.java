@@ -1,5 +1,6 @@
 package com.raidrin.sakanu.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.raidrin.sakanu.entities.Term;
 import com.raidrin.sakanu.services.*;
 import lombok.RequiredArgsConstructor;
@@ -20,12 +21,20 @@ public class OpenAiController {
         Term foundTerm = techTermsService.findTerm(domain, term);
 
         if(foundTerm != null) {
-            System.out.println("Term already exists in database");
-            return Mono.just(TermResponse.fromTerm(foundTerm));
+            try {
+                return Mono.just(TermResponse.fromTerm(foundTerm));
+            } catch (JsonProcessingException e) {
+                return Mono.error(new RuntimeException("Failed to convert term entity to term response"));
+            }
         }
         TermResponse termResponse = techTermsService.getTechTerm(domain, term);
 
-        Term termEntity = Term.fromTermResponse(termResponse);
+        Term termEntity = null;
+        try {
+            termEntity = Term.fromTermResponse(termResponse);
+        } catch (JsonProcessingException e) {
+            return Mono.error(new RuntimeException("Failed to convert term response to term entity"));
+        }
 
         return Mono.just(termEntity)
                 .doOnNext(techTermsService::saveTerm)
