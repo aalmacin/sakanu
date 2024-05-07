@@ -29,8 +29,8 @@ public class OpenAiTermQuery {
         if(sanitizedTerm.length() >= 255) {
             throw new IllegalArgumentException("Term cannot be longer than 255 characters");
         }
-//        return getResponseFromOpenAI(systemContent, domain, sanitizedTerm);
-        return getMockResponse(systemContent, domain, sanitizedTerm);
+        return getResponseFromOpenAI(systemContent, domain, sanitizedTerm);
+//        return getMockResponse(systemContent, domain, sanitizedTerm);
     }
 
     private TermResponse getResponseFromOpenAI(String systemContent, String domain, String term) {
