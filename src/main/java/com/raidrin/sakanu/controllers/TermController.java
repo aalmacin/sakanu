@@ -23,17 +23,10 @@ public class TermController {
                 .map(ResponseEntity::ok);
     }
 
-    @GetMapping("/{domain}/{term}")
-    public Mono<ResponseEntity<Term>> getTerm(@PathVariable String domain, @PathVariable String term) {
-        return Mono.justOrEmpty(techTermsService.findTerm(domain, term))
-                .map(ResponseEntity::ok)
-                .defaultIfEmpty(ResponseEntity.notFound().build());
-    }
-
-    @DeleteMapping("/{domain}/{term}")
-    public Mono<ResponseEntity<Void>> deleteTerm(@PathVariable String domain, @PathVariable String term) {
-        return Mono.justOrEmpty(techTermsService.findTerm(domain, term))
+    @DeleteMapping("/term/{id}")
+    public Mono<ResponseEntity<Term>> deleteTerm(@PathVariable Long id) {
+        return Mono.just(techTermsService.findById(id))
                 .doOnNext(techTermsService::deleteTerm)
-                .thenReturn(ResponseEntity.noContent().build());
+                .map(ResponseEntity::ok);
     }
 }

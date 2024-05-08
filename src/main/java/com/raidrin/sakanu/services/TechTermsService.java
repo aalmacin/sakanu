@@ -35,4 +35,8 @@ public class TechTermsService {
     public Page<Term> findAllTerms(Pageable pageable) {
         return termRepository.findAll(pageable);
     }
+
+    public Term findById(Long id) {
+        return termRepository.findById(id).orElse(null);
+    }
 }
