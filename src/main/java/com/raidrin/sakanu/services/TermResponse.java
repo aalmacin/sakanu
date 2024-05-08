@@ -1,8 +1,6 @@
 package com.raidrin.sakanu.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.raidrin.sakanu.entities.Term;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,9 +29,6 @@ public class TermResponse implements Serializable {
     }
 
     public static TermResponse fromTerm(Term term) throws JsonProcessingException {
-
-        ObjectMapper objectMapper = new ObjectMapper();
-
         TermResponse termResponse = new TermResponse();
         termResponse.setSearchTerm(term.getTerm());
         termResponse.setDomain(term.getDomain());
@@ -41,14 +36,17 @@ public class TermResponse implements Serializable {
         termResponse.setDescription(term.getDescription());
         termResponse.setPurpose(term.getPurpose());
         termResponse.setSimpleExplanation(term.getSimpleExplanation());
-        List<Question> questions = objectMapper.readValue(term.getQuestions(), new TypeReference<List<Question>>() {});
+        List<Question> questions = term.getQuestions().stream().map(question -> {
+            Question q = new Question();
+            q.setQuestion(question.getQuestion());
+            q.setAnswer(question.getAnswer());
+            return q;
+        }).toList();
         termResponse.setQuestions(questions);
 
-        List<String> categories = objectMapper.readValue(term.getCategories(), new TypeReference<List<String>>() {});
-        termResponse.setCategories(categories);
+        termResponse.setCategories(term.getCategories());
 
-        List<String> relatedTerms = objectMapper.readValue(term.getRelatedTerms(), new TypeReference<List<String>>() {});
-        termResponse.setRelatedTerms(relatedTerms);
+        termResponse.setRelatedTerms(term.getRelatedTerms());
         return termResponse;
     }
 }

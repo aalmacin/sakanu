@@ -9,6 +9,7 @@ import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.service.OpenAiService;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -19,18 +20,22 @@ import java.util.Locale;
 @RequiredArgsConstructor
 public class OpenAiTermQuery {
     private final OpenAiService openAiService;
+    @Value("${openai.enabled}")
+    private boolean pullFromOpenAI;
 
     public TermResponse query(String domain, String term) {
         String systemContent = TaskMessageGenerator.generateTaskMessage(domain);
-        if(term == null || term.trim().isEmpty()) {
+        if (term == null || term.trim().isEmpty()) {
             throw new IllegalArgumentException("Term cannot be null or empty");
         }
         String sanitizedTerm = term.trim().toLowerCase(Locale.ENGLISH);
-        if(sanitizedTerm.length() >= 255) {
+        if (sanitizedTerm.length() >= 255) {
             throw new IllegalArgumentException("Term cannot be longer than 255 characters");
         }
-        return getResponseFromOpenAI(systemContent, domain, sanitizedTerm);
-//        return getMockResponse(systemContent, domain, sanitizedTerm);
+        if (pullFromOpenAI) {
+            return getResponseFromOpenAI(systemContent, domain, sanitizedTerm);
+        }
+        return getMockResponse(systemContent, domain, sanitizedTerm);
     }
 
     private TermResponse getResponseFromOpenAI(String systemContent, String domain, String term) {

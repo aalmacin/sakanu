@@ -5,6 +5,9 @@ import com.raidrin.sakanu.repositories.TermRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.util.Locale;
 
 @Service
@@ -23,5 +26,13 @@ public class TechTermsService {
 
     public Term findTerm(String domain, String term) {
         return termRepository.findByDomainAndTerm(domain, term.toLowerCase(Locale.ENGLISH));
+    }
+
+    public void deleteTerm(Term existingTerm) {
+        termRepository.delete(existingTerm);
+    }
+
+    public Page<Term> findAllTerms(Pageable pageable) {
+        return termRepository.findAll(pageable);
     }
 }
