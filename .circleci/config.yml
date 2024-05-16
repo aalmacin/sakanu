@@ -51,6 +51,8 @@ jobs:
             Namespace=aws:elasticbeanstalk:application:environment,OptionName=APP_UI_URL,Value=$APP_UI_URL \
             Namespace=aws:elasticbeanstalk:application:environment,OptionName=SAKANU_DATABASE_URL,Value=$SAKANU_DATABASE_URL \
             Namespace=aws:elasticbeanstalk:application:environment,OptionName=SAKANU_DATABASE_PASSWORD,Value=$SAKANU_DATABASE_PASSWORD \
+            Namespace=aws:elasticbeanstalk:application:environment,OptionName=OKTA_OAUTH2_ISSUER,Value=$OKTA_OAUTH2_ISSUER \
+            Namespace=aws:elasticbeanstalk:application:environment,OptionName=OKTA_OAUTH2_AUDIENCE,Value=$OKTA_OAUTH2_AUDIENCE \
             --environment-name sakanu-api-prod --version-label v${CIRCLE_SHA1}
       - run:
           name: Wait for environment update to complete
