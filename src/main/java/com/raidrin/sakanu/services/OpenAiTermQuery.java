@@ -49,7 +49,7 @@ public class OpenAiTermQuery {
 
         ChatCompletionRequest chatCompletionRequest =
                 ChatCompletionRequest.builder()
-                        .model("gpt-4")
+                        .model("gpt-4o")
                         .messages(
                                 List.of(
                                         systemMessage,
