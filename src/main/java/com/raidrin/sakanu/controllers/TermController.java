@@ -18,15 +18,17 @@ public class TermController {
     @GetMapping
     public Mono<ResponseEntity<Page<Term>>> getAllTerms(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return Mono.just(techTermsService.findAllTerms(PageRequest.of(page - 1, size)))
+            @RequestParam(defaultValue = "10") int size,
+            @RequestHeader("Authorization") String token) {
+        return Mono.just(techTermsService.findAllTerms(PageRequest.of(page - 1, size), token))
                 .map(ResponseEntity::ok);
     }
 
     @DeleteMapping("/term/{id}")
-    public Mono<ResponseEntity<Term>> deleteTerm(@PathVariable Long id) {
-        return Mono.just(techTermsService.findById(id))
-                .doOnNext(techTermsService::deleteTerm)
+    public Mono<ResponseEntity<Term>> deleteTerm(@PathVariable Long id,
+                                                 @RequestHeader("Authorization") String token) {
+        return Mono.just(techTermsService.findById(id, token))
+                .doOnNext(existingTerm -> techTermsService.deleteTerm(existingTerm, token))
                 .map(ResponseEntity::ok);
     }
 }

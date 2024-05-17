@@ -38,6 +38,7 @@ public class Term {
     private List<String> relatedTerms;
     @Convert(converter = StringListConverter.class)
     private List<String> categories;
+    private String user;
 
     public static Term fromTermResponse(TermResponse termResponse) throws JsonProcessingException {
         Term term = new Term();

@@ -26,6 +26,7 @@ public class SecurityConfig {
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers("/").permitAll()
                         .pathMatchers("/api/**").authenticated()
+                        .pathMatchers("/api/terms/**").authenticated()
                 )
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .oauth2ResourceServer(ServerHttpSecurity.OAuth2ResourceServerSpec::jwt);

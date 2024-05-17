@@ -14,18 +14,20 @@ public class OpenAiController {
     private final TechTermsService techTermsService;
 
     @GetMapping("/learn/{domain}/{term}")
-    public Mono<TermResponse> getOpenAIResponse(@PathVariable("domain") String domain, @PathVariable("term") String term) {
+    public Mono<TermResponse> getOpenAIResponse(@PathVariable("domain") String domain,
+                                                @PathVariable("term") String term,
+                                                @RequestHeader("Authorization") String token) {
         System.out.println("Received request for domain: " + domain + " and term: " + term);
-        Term foundTerm = techTermsService.findTerm(domain, term);
+        Term foundTerm = techTermsService.findTerm(domain, term, token);
 
-        if(foundTerm != null) {
+        if (foundTerm != null) {
             try {
                 return Mono.just(TermResponse.fromTerm(foundTerm));
             } catch (JsonProcessingException e) {
                 return Mono.error(new RuntimeException("Failed to convert term entity to term response"));
             }
         }
-        TermResponse termResponse = techTermsService.getTechTerm(domain, term);
+        TermResponse termResponse = techTermsService.getTechTerm(domain, term, token);
 
         Term termEntity = null;
         try {
@@ -35,7 +37,7 @@ public class OpenAiController {
         }
 
         return Mono.just(termEntity)
-                .doOnNext(techTermsService::saveTerm)
+                .doOnNext(t -> techTermsService.saveTerm(t, token))
                 .thenReturn(termResponse);
     }
 }
