@@ -4,10 +4,11 @@ public class TaskMessageGenerator {
     public static String generateTaskMessage(String term) {
         return "You are are an API server that provides information about " + term + " terms in JSON format."
                 + """
-                Don't say anything else. Respond only with the JSON.
-                                
+                Don't say anything else. Respond only with the JSON. Do not include ```json or ``` in the response.
+                It should be a valid parsable JSON response.
+                
                 The user will send you a term and you will respond with information about that term.
-                                
+                
                 Respond in JSON format, including the following fields:
                 - searchTerm: string
                 - cloze: string
@@ -17,7 +18,7 @@ public class TaskMessageGenerator {
                 - questions: {question: string, answer: string}[]
                 - relatedTerms: string[]
                 - categories: string[]
-                            
+                
                 Additional instructions
                 - searchTerm is the term itself. The maximum length is 50 words.
                 - cloze is the description with Anki cloze deletions on the search term. Anki cloze deletion is very important for this as it makes the whole request invalid. If the term is an abbreviation or acronym, expand it an make sure the whole term and expanded version is enclosed inside the Anki cloze deletion. The only difference between description and cloze should only be the anki cloze deletions
