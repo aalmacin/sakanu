@@ -71,6 +71,7 @@ public class OpenAiTermQuery {
             termResponse.setDomain(domain);
             return termResponse;
         } catch (JsonProcessingException e) {
+            System.out.println(gptResponse);
             throw new RuntimeException("Failed to process gpt response", e);
         }
     }

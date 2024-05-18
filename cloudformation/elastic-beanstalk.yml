@@ -214,6 +214,15 @@ Resources:
       EnvironmentName: sakanu-api-prod
       SolutionStackName: 64bit Amazon Linux 2023 v4.2.1 running Corretto 21
       OptionSettings:
+        - Namespace: 'aws:elasticbeanstalk:cloudwatch:logs'
+          OptionName: 'StreamLogs'
+          Value: 'true'
+        - Namespace: 'aws:elasticbeanstalk:cloudwatch:logs'
+          OptionName: 'DeleteOnTerminate'
+          Value: 'false'
+        - Namespace: 'aws:elasticbeanstalk:cloudwatch:logs'
+          OptionName: 'RetentionInDays'
+          Value: '7'
         - Namespace: 'aws:elasticbeanstalk:environment'
           OptionName: 'EnvironmentType'
           Value: 'LoadBalanced'
