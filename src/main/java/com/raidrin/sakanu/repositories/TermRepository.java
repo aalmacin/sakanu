@@ -15,4 +15,6 @@ public interface TermRepository extends JpaRepository<Term, Long> {
     Page<Term> findAllByUser(String user, Pageable pageable);
 
     Optional<Term> findByIdAndUser(Long id, String user);
+
+    long countByUser(String user);
 }

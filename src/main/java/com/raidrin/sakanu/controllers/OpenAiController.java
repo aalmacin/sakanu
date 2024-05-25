@@ -2,8 +2,12 @@ package com.raidrin.sakanu.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.raidrin.sakanu.entities.Term;
+import com.raidrin.sakanu.exceptions.LimitReachedException;
+import com.raidrin.sakanu.models.ProblemDetail;
 import com.raidrin.sakanu.services.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -39,6 +43,12 @@ public class OpenAiController {
         return Mono.just(termEntity)
                 .doOnNext(t -> techTermsService.saveTerm(t, token))
                 .thenReturn(termResponse);
+    }
+
+    @ExceptionHandler(LimitReachedException.class)
+    public ResponseEntity<ProblemDetail> handleLimitReachedException(LimitReachedException ex) {
+        ProblemDetail problemDetail = new ProblemDetail(ex.getMessage());
+        return new ResponseEntity<>(problemDetail, HttpStatus.BAD_REQUEST);
     }
 }
 

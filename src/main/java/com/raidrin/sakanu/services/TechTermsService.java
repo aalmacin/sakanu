@@ -1,6 +1,7 @@
 package com.raidrin.sakanu.services;
 
 import com.raidrin.sakanu.entities.Term;
+import com.raidrin.sakanu.exceptions.LimitReachedException;
 import com.raidrin.sakanu.repositories.TermRepository;
 import com.raidrin.sakanu.security.JwtService;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,11 @@ public class TechTermsService {
     public void saveTerm(Term termEntity, String token) {
         String subClaim = jwtService.getSubClaim(token);
         termEntity.setUser(subClaim);
+
+        long count = termRepository.countByUser(subClaim);
+        if (count >= 300) {
+            throw new LimitReachedException("You have reached the limit of 300 terms.");
+        }
 
         termRepository.save(termEntity);
     }
