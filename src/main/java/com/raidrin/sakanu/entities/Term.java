@@ -45,7 +45,7 @@ public class Term {
     private String user;
 
     @CreatedDate
-    @Column(updatable = false)
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdDate;
 
     public static Term fromTermResponse(TermResponse termResponse) throws JsonProcessingException {
