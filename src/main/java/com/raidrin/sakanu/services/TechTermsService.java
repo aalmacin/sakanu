@@ -76,4 +76,9 @@ public class TechTermsService {
     public List<String> getDomains() {
         return termRepository.getDomainsByUser("global", PageRequest.of(0, 100));
     }
+
+    public List<String> getDomains(String token) {
+        String subClaim = jwtService.getSubClaim(token);
+        return termRepository.getDomainsByUser(subClaim, PageRequest.of(0, 100));
+    }
 }

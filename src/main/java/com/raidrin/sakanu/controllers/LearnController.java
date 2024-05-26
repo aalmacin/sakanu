@@ -18,8 +18,8 @@ import reactor.core.scheduler.Schedulers;
 public class LearnController {
     private final TechTermsService techTermsService;
 
-    @GetMapping("/{domain}/{term}")
-    public Mono<TermResponse> getOpenAIResponse(@PathVariable("domain") String domain,
+    @GetMapping("/{term}")
+    public Mono<TermResponse> getOpenAIResponse(@RequestParam(value = "domain", required = false) String domain,
                                                 @PathVariable("term") String term,
                                                 @RequestHeader("Authorization") String token) {
         System.out.println("Received request for domain: " + domain + " and term: " + term);

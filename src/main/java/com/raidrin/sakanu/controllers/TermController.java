@@ -10,6 +10,8 @@ import org.springframework.data.domain.PageRequest;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/terms")
 @RequiredArgsConstructor
@@ -32,5 +34,11 @@ public class TermController {
                 .publishOn(Schedulers.boundedElastic())
                 .doOnNext(existingTerm -> techTermsService.deleteTerm(existingTerm, token))
                 .map(ResponseEntity::ok);
+    }
+
+    @GetMapping("/domains")
+    public Mono<List<String>> getDomains(@RequestHeader("Authorization") String token) {
+        System.out.println("Received domains request");
+        return Mono.just(techTermsService.getDomains(token));
     }
 }
