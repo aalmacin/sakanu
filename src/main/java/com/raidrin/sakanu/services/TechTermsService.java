@@ -5,12 +5,14 @@ import com.raidrin.sakanu.exceptions.LimitReachedException;
 import com.raidrin.sakanu.repositories.TermRepository;
 import com.raidrin.sakanu.security.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Locale;
 
 @Service
@@ -69,5 +71,9 @@ public class TechTermsService {
     @Transactional
     public void saveTerm(Term t) {
         saveTerm(t, "global");
+    }
+
+    public List<String> getDomains() {
+        return termRepository.getDomainsByUser("global", PageRequest.of(0, 100));
     }
 }

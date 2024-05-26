@@ -13,13 +13,15 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/api/global/learn")
+@RequestMapping("/api/global")
 @RequiredArgsConstructor
 public class GlobalController {
     private final TechTermsService techTermsService;
 
-    @GetMapping("/{term}")
+    @GetMapping("/learn/{term}")
     public Mono<TermResponse> getOpenAIResponse(@RequestParam(value = "domain", required = false) String domain,
                                                 @PathVariable("term") String term) {
         System.out.println("Received global request for domain: " + domain + " and term: " + term);
@@ -45,6 +47,12 @@ public class GlobalController {
                 .publishOn(Schedulers.boundedElastic())
                 .doOnNext(techTermsService::saveTerm)
                 .thenReturn(termResponse);
+    }
+
+    @GetMapping("/domains")
+    public Mono<List<String>> getDomains() {
+        System.out.println("Received domains request");
+        return Mono.just(techTermsService.getDomains());
     }
 
     @ExceptionHandler(LimitReachedException.class)
