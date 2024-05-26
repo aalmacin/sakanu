@@ -24,9 +24,11 @@ public class SecurityConfig {
                                                          CorsConfigurationSource corsConfigurationSource) {
         http
                 .authorizeExchange(exchanges -> exchanges
+                        .pathMatchers("/api/global/**").permitAll()
                         .pathMatchers("/").permitAll()
-                        .pathMatchers("/api/**").authenticated()
+                        .pathMatchers("/api/learn/**").authenticated()
                         .pathMatchers("/api/terms/**").authenticated()
+                        .anyExchange().authenticated()
                 )
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .oauth2ResourceServer(ServerHttpSecurity.OAuth2ResourceServerSpec::jwt);

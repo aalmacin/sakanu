@@ -10,14 +10,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/learn")
 @RequiredArgsConstructor
-public class OpenAiController {
+public class LearnController {
     private final TechTermsService techTermsService;
 
-    @GetMapping("/learn/{domain}/{term}")
+    @GetMapping("/{domain}/{term}")
     public Mono<TermResponse> getOpenAIResponse(@PathVariable("domain") String domain,
                                                 @PathVariable("term") String term,
                                                 @RequestHeader("Authorization") String token) {
@@ -31,7 +32,7 @@ public class OpenAiController {
                 return Mono.error(new RuntimeException("Failed to convert term entity to term response"));
             }
         }
-        TermResponse termResponse = techTermsService.getTechTerm(domain, term, token);
+        TermResponse termResponse = techTermsService.getTechTerm(domain, term);
 
         Term termEntity = null;
         try {
@@ -41,6 +42,7 @@ public class OpenAiController {
         }
 
         return Mono.just(termEntity)
+                .publishOn(Schedulers.boundedElastic())
                 .doOnNext(t -> techTermsService.saveTerm(t, token))
                 .thenReturn(termResponse);
     }

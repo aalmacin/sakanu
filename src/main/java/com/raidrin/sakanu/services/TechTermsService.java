@@ -20,7 +20,7 @@ public class TechTermsService {
     private final TermRepository termRepository;
     private final JwtService jwtService;
 
-    public TermResponse getTechTerm(String domain, String term, String token) {
+    public TermResponse getTechTerm(String domain, String term) {
         return openAiTermQuery.query(domain, term);
     }
 
@@ -29,9 +29,13 @@ public class TechTermsService {
         String subClaim = jwtService.getSubClaim(token);
         termEntity.setUser(subClaim);
 
-        long count = termRepository.countByUser(subClaim);
-        if (count >= 300) {
-            throw new LimitReachedException("You have reached the limit of 300 terms.");
+        long count = termRepository.countByCreatedDateTodayAndUser(subClaim);
+        if (count >= 300 && token.equals("global")) {
+            throw new LimitReachedException("The system have reached the daily limit. Try again tomorrow or " +
+                    "register to have your own personal limit.");
+        } else if (count >= 100 && !token.equals("global")) {
+            throw new LimitReachedException("You have reached the limit of 100 terms per day. " +
+                    "Please upgrade your subscription to increase the limit.");
         }
 
         termRepository.save(termEntity);
@@ -56,5 +60,14 @@ public class TechTermsService {
     public Term findById(Long id, String token) {
         String subClaim = jwtService.getSubClaim(token);
         return termRepository.findByIdAndUser(id, subClaim).orElse(null);
+    }
+
+    public Term findTerm(String domain, String term) {
+        return findTerm(domain, term, "global");
+    }
+
+    @Transactional
+    public void saveTerm(Term t) {
+        saveTerm(t, "global");
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 @RestController
 @RequestMapping("/api/terms")
@@ -28,6 +29,7 @@ public class TermController {
     public Mono<ResponseEntity<Term>> deleteTerm(@PathVariable Long id,
                                                  @RequestHeader("Authorization") String token) {
         return Mono.just(techTermsService.findById(id, token))
+                .publishOn(Schedulers.boundedElastic())
                 .doOnNext(existingTerm -> techTermsService.deleteTerm(existingTerm, token))
                 .map(ResponseEntity::ok);
     }

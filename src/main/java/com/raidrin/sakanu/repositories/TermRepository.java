@@ -4,6 +4,7 @@ import com.raidrin.sakanu.entities.Term;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 
@@ -16,5 +17,6 @@ public interface TermRepository extends JpaRepository<Term, Long> {
 
     Optional<Term> findByIdAndUser(Long id, String user);
 
-    long countByUser(String user);
+    @Query("SELECT COUNT(t) FROM Term t WHERE t.createdDate >= CURRENT_DATE AND t.user = :user")
+    long countByCreatedDateTodayAndUser(String user);
 }

@@ -6,12 +6,16 @@ import com.raidrin.sakanu.services.TermResponse;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
 @Getter
 @Setter
+@EntityListeners(AuditingEntityListener.class)
 public class Term {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,6 +43,10 @@ public class Term {
     @Convert(converter = StringListConverter.class)
     private List<String> categories;
     private String user;
+
+    @CreatedDate
+    @Column(updatable = false)
+    private LocalDateTime createdDate;
 
     public static Term fromTermResponse(TermResponse termResponse) throws JsonProcessingException {
         Term term = new Term();
